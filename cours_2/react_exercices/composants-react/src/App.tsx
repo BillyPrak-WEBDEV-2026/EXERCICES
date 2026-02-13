@@ -1,27 +1,48 @@
-import { type FC } from 'react'
+import { type FC, useState } from 'react'
 import './App.css'
+import { Header } from '../components/Header'
+import { Main } from '../components/Main'
+import { CoreConcept } from '../components/CoreConcept'
+import { TabButton } from '../components/TabButton'
+import { CORE_CONCEPTS, EXAMPLES} from './data'
 
 const App: FC = () => {
+  const [selectedButton, setSelectedButton] = useState<string>("empty")
+
+  const handleButtonClick = (buttonName: string) => {
+    setSelectedButton(buttonName)
+  }
+
+  const tabContent = EXAMPLES[selectedButton as keyof typeof EXAMPLES]
 
   return (
     <div>
-      <header>
-          <img src="src/assets/react.svg" className="logo react" alt="React logo" />
-          <h1>Bienvenue sur mon app React</h1>
-          <h2>Cette page utilise React</h2>
-        </header>
-      <main>
-        <section>
-          <h2>À propos</h2>
-          <p>Dans cet exercice nous allons jouer avec le principe de composant.</p>
-          <p>Les composants sont très utiles dans le développement web moderne.</p>
-        </section>
+      <Header />
+      <Main />
+      <section id="core-concepts">
+        <h2>Concepts Importants</h2>
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {CORE_CONCEPTS.map((concept) => (
+            <CoreConcept key={concept.title} {...concept} />
+          ))}
+        </ul>
+      </section>
 
-        <section>
-          <h2>A la fin de ce cours</h2>
-          <p>Le JSX et les composants n'auront plus aucun secrets pour vous !</p>
-        </section>  
-      </main>
+      <section id="examples">
+        <h2>Exemples</h2>
+        <menu style={{ listStyle: "none", padding: 0 }}>
+            {Object.keys(EXAMPLES).filter((key) => key !== "empty").map((key) => (
+            <TabButton key={key} onClick={() => handleButtonClick(key)}>
+              {key}
+            </TabButton>
+            ))}
+        </menu>
+        <div id="tab-content">
+          <h3>{tabContent.title}</h3>
+          <p>{tabContent.description}</p>
+          <pre><code>{tabContent.code}</code></pre>
+        </div>
+      </section>
     </div>  
   )
 }

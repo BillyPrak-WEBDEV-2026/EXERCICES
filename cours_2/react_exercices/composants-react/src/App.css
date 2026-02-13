@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+.tab-button {
+  padding: 0.5em 1em;
+  margin: 0.5em;
+  cursor: pointer;
+}
+
+pre {
+  text-align: left;
+  background-color: #111;
+  overflow-x: auto;
+}
