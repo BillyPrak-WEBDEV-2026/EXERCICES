@@ -1,4 +1,4 @@
-class Car{
+export default class Car{
     id = null
     model = {
         "name": "",
@@ -24,10 +24,10 @@ class Car{
 
     printEssentialCarInfos() {
         console.log(`
-            Id de la voiture : ${this.id},
-            Modèle de la voiture : ${this.model.name}
-            Propriétaire : ${this.owner.firstName} ${this.owner.lastName}
-            Age du propriétaire : ${this.owner.age}
+Id de la voiture : ${this.id},
+Modèle de la voiture : ${this.model.name}
+Propriétaire : ${this.owner.firstName} ${this.owner.lastName}
+Age du propriétaire : ${this.owner.age}
             `)
     }
 
@@ -35,5 +35,3 @@ class Car{
         console.log("Hello I am from the Car class !")
     }
 }
-
-export default Car

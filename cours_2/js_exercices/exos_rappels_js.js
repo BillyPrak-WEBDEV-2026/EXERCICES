@@ -13,8 +13,10 @@ console.log("=== TP JAVASCRIPT - EXERCICES 1 À 8 ===\n");
 // et l'objet JSON natifs à Javascript : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/JSON
 
 console.log("=== 1. Lecture et manipulation de fichiers JSON ===");
-
-
+import data from './voitures.json' with { type: 'json' };
+console.log("Données brutes : ", data);
+console.log("Données stringifiées : ", JSON.stringify(data));
+console.log("Données parsées : ", JSON.parse(JSON.stringify(data)));
 
 // Affichage des différentes représentations des données
 
@@ -31,7 +33,10 @@ console.log("=== 1. Lecture et manipulation de fichiers JSON ===");
 // Enfin importez-la et instanciez-la pour constater que tout fonctionne.
 
 console.log("\n=== 2. Création et import de classe ===");
+import Car from './Car.js';
 
+const voiture = new Car(101, "Clio", "Jean", "Dupont", 30, 180);
+console.log(voiture.printEssentialCarInfos());
 
 // ============================================================================
 // 3. TRANSFORMATION DE DONNÉES
@@ -39,6 +44,15 @@ console.log("\n=== 2. Création et import de classe ===");
 // Énoncé : À partir des données du JSON, créez un tableau d'instances de Car
 
 console.log("\n=== 3. Transformation de données ===");
+let cars = data.map(carData => new Car(
+    carData.id_modele,
+    carData.modele.nom,
+    carData.proprietaire.prenom,
+    carData.proprietaire.nom,
+    carData.proprietaire.age,
+    carData.modele.vitesse_de_pointe_kmH
+));
+console.log("Tableau d'instances de Car : ", cars);
 
 // ============================================================================
 // 4. UTILISATION DES MÉTHODES DE TABLEAUX
@@ -49,12 +63,16 @@ console.log("\n=== 3. Transformation de données ===");
 console.log("\n=== 4. Utilisation des méthodes de tableaux ===");
 
 // 4.1. Afficher les informations de chaque voiture de votre tableaux de voitures
+cars.forEach(car => car.printEssentialCarInfos());
 
 // 4.2. Récupérer dans le tableau la voiture du modèle Clio
+cars.filter(car => car.model.name === "Clio");
 
 // 4.3. Calculer la somme des ages disponibles des propriétaires
+cars.reduce((sum, car) => sum + car.owner.age, 0);
 
 // 4.4. Calculer la vitesse de pointe moyenne sur toutes les voitures répertoriées
+cars.reduce((sum, car) => sum + car.model.topSpeed, 0) / cars.length;
 
 // ============================================================================
 // 5. DESTRUCTURATION
@@ -67,20 +85,32 @@ console.log("\n=== 5. Destructuration ===");
 // 5.1. 
 // On veut abandonner la représentation par tableau qui n'est pas forcément pratique
 // On va destructurer le tableau en 3 objets cars distincts : clioCar, alpineCar et ferrariCar
-
+const [clioCar, alpineCar, ferrariCar] = cars;
 
 // 5.2. De même pour une manipulation plus simple nous voulons avoir à disposition, 
 // le prénom, nom et l'âge du conducteur de la Alpine directement sous forme de variable.
-
+const {firstName, lastName, age} = alpineCar.owner;
+console.log(`Le propriétaire de la Alpine s'appelle ${firstName} ${lastName} et a ${age} ans.`);
 
 // 5.3. Je souhaiterais avoir une fonction qui simplement prend un objet owner et m'affiche ses informations.
 // Je dois être capable dans cette fonction de pouvoir manipuler les différents champs de l'objet, 
 // sans faire appel à l'objet initial.
-
+function printOwnerInfos(owner) {
+    const {firstName, lastName, age} = owner;
+    console.log(`Le propriétaire s'appelle ${firstName} ${lastName} et a ${age} ans.`);
+}
 
 // 5.4. Similaire à la précédente question je voudrais avoir une fonction qui me permette de 
 // manipuler toutes les informations d'une voiture sans avoir besoin de faire appel à l'objet passé.
 // Vous pouvez prendre l'exemple de la voiture 103 et afficher ses informations sans appeler l'objet d'origine.
+function printCarInfos(car) {
+    const {id, model, owner} = car;
+    const {name, brand, modeleId, serialNumber, topSpeed} = model;
+    console.log(`La voiture ${name} de id ${id} de modèle ${brand} id ${modeleId} et de numéro de série ${serialNumber} a une vitesse maximale de ${topSpeed}km/h`);
+    printOwnerInfos(owner);
+}
+
+printCarInfos(alpineCar)
 
 
 // ============================================================================
@@ -93,9 +123,19 @@ console.log("\n=== 6. Spread Operator ===");
 
 // 6.1. Créez un nouveau tableau "voitures" et affectez lui le précédent tableau cars.
 // Modifiez le tableau "voitures". Affichez ensuite le tableau voitures et cars, que constatez-vous ?
+let voitures = cars;
+voitures.push(new Car(104, "Porsche", "Luc", "Bernard", 45, 310));
+console.log("Tableau voitures : ", voitures);
+console.log("Tableau cars : ", cars);
+
+cars.pop();
 
 // 6.2. Créez une copie d'une tablea cars disont "automobiles" mais cette fois-ci en 
 // utilisant une manière qui me permettra d'avoir une copie distincte d'une tableau cars.
+let automobiles = [...cars];
+automobiles.push(new Car(104, "Porsche", "Luc", "Bernard", 45, 310));
+console.log("Tableau automobiles : ", automobiles);
+console.log("Tableau cars : ", cars);
 
 // ============================================================================
 // 7. HIGHER ORDER FUNCTIONS ET FONCTIONS COMME VALEURS
@@ -107,7 +147,16 @@ console.log("\n=== 7. Higher Order Functions et fonctions comme valeurs ===");
 
 // 7.0. Créez une fonction anonyme et affectez la à une variable. Faites de même pour 
 // une arrow function.
+const yoann = function() {
+    console.log("Yoann le goat");
+}
 
+const neil = () => {
+    console.log("Neil le goat");
+}
+
+yoann();
+neil();
 
 // ============================================================================
 // 7.1. HIGHER ORDER FUNCTION POUR FORMATER LES STRINGS
@@ -118,6 +167,21 @@ console.log("\n=== 7. Higher Order Functions et fonctions comme valeurs ===");
 // des propriétés énumérables d'un objet.
 
 console.log("\n--- 7.1. Higher order function pour formater les strings :");
+function formatStringsInObject(obj, formatFunction) {
+    const formattedObj = {...obj};
+    for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'string') {
+            formattedObj[key] = formatFunction(value);
+        }
+    }
+    return formattedObj;
+}
+
+const alpineOwner = alpineCar.owner;
+const formattedOwner = formatStringsInObject(alpineOwner, str => str.toUpperCase());
+console.log("Owner avant formatage : ", alpineOwner);
+console.log("Owner après formatage : ", formattedOwner);
+    
 
 // ============================================================================
 // 7.2. FONCTIONS DE TRANSFORMATION DE STRINGS
@@ -126,6 +190,13 @@ console.log("\n--- 7.1. Higher order function pour formater les strings :");
 // transformer tous ses caractères en majuscule et une autre en minuscule.
 
 console.log("\n--- 7.2. Fonctions de transformation :");
+function toUpperCase(str) {
+    return str.toUpperCase();
+}
+
+function toLowerCase(str) {
+    return str.toLowerCase();
+}
 
 // ============================================================================
 // 7.3. APPLICATION DE LA FONCTION DE FORMATAGE
@@ -135,6 +206,9 @@ console.log("\n--- 7.2. Fonctions de transformation :");
 // l'appliquer sur le propriétaire de la voiture Alpine par exemple. 
 
 console.log("\n--- 7.3. Application de formatage sur un sous-objet :");
+const formattedFerrariOwner = formatStringsInObject(ferrariCar.owner, toUpperCase);
+console.log(formattedFerrariOwner);
+
 
 // ============================================================================
 // 7.4. APPLICATION SUR UN OBJET COMPLET
@@ -143,6 +217,21 @@ console.log("\n--- 7.3. Application de formatage sur un sous-objet :");
 // Essayez de trouver la manière la plus élégante/simple/réutilisable de le faire
 
 console.log("\n--- 7.4. Application sur un objet complet :");
+function formatStringInNestedObject(obj, formatFunction) {
+    let formattedObj = {...obj}
+    for(const [key, value] of Object.entries(obj)) {
+        if(typeof value === "object" && value != null) {
+            formattedObj[key] = formatStringInNestedObject(value, formatFunction);
+        }
+        if(typeof value === "string") {
+            formattedObj[key] = formatFunction(value);
+        }
+    }
+    return formattedObj;
+}
+
+const formattedClio = formatStringInNestedObject(clioCar, toUpperCase);
+console.log(formattedClio);
 
 
 // ============================================================================
@@ -162,7 +251,14 @@ console.log("\n=== EXERCICE 8 : GESTION DES ERREURS ===\n");
 console.log("--- 8.1. Try-Catch basique ---");
 
 function parseCarData(jsonString) {
-   //...
+    try {
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error(`Aie aie aie, t'as tout fait planté : ${error}`)
+        return null;
+    } finally {
+        console.log("Travail terminé.")
+    }
 }
 
 // Tests
@@ -183,10 +279,16 @@ console.log("Parsing JSON invalide :", parseCarData(invalidJson));
 console.log("\n--- 8.2. Erreurs personnalisées ---");
 
 // Classe d'erreur personnalisée
-// class CarValidationError ... 
+class CarValidationError extends Error {
+    constructor(message) {
+        super(message); this.name = "CarValidationError";
+    }
+}
 
 function validateCar(car) {
-    //...    
+    if([Object.hasOwn(car, "id"), Object.hasOwn(car, "model"), Object.hasOwn(car, "owner")].some(hasProp => !hasProp)) {
+        throw new CarValidationError("La voiture doit posséder les propriétés id, model et owner");
+    }
 }
 
 // Tests
@@ -218,9 +320,17 @@ try {
 //   dans tous les cas
 
 console.log("\n--- 8.3. Finally et nettoyage de ressources ---");
-
+import fs from 'fs';
 function loadCarsFromFile(filename) {
-    //...
+    try {
+        const fileContent = fs.readFileSync(filename);
+        const carData = JSON.parse(fileContent);
+        return carData;
+    } catch (error) {
+        console.error(`Erreur lors du chargement du fichier : ${error}`); 
+    } finally { 
+        console.log("Opération de lecture terminée."); 
+    }
 }
 
 // Tests
@@ -246,23 +356,33 @@ console.log("\n--- 8.4. Propagation d'erreurs ---");
 // class MissingDataError ....
 
 function calculateAverageSpeed(cars) {
-    // ...
+    return cars.reduce((sum, car) => sum + car.model.topSpeed, 0) / cars.length;
 }
 
 function safeCalculateAverageSpeed(cars) {
-    // ...
+    if (!Array.isArray(cars)) {
+        console.error("TypeError: Le paramètre doit être un tableau de voitures.");
+        return null;
+    }
+    const totalSpeed = cars.reduce((sum, car) => {
+        if(car.model.topSpeed == null) {
+            console.error(`MissingDataError: La voiture avec id ${car.id} n'a pas de topSpeed défini.`);
+            return null;
+        }
+        return sum + car.model.topSpeed}, 0);
+    return totalSpeed / cars.length;
 }
 
 // Exemple de tests (à décommenter)
-// console.log("Calcul avec données valides :", safeCalculateAverageSpeed(cars));
-// console.log("Calcul avec paramètre invalide :", safeCalculateAverageSpeed("pas un tableau"));
-// console.log("Calcul avec tableau vide :", safeCalculateAverageSpeed([]));
+console.log("Calcul avec données valides :", safeCalculateAverageSpeed(cars));
+console.log("Calcul avec paramètre invalide :", safeCalculateAverageSpeed("pas un tableau"));
+console.log("Calcul avec tableau vide :", safeCalculateAverageSpeed([]));
 
-// const carsWithMissingData = [
-//     cars[0],
-//     { id: 999, model: {}, owner: {} } // Voiture sans topSpeed
-// ];
-//console.log("Calcul avec données manquantes :", safeCalculateAverageSpeed(carsWithMissingData));
+const carsWithMissingData = [
+    cars[0],
+    { id: 999, model: {}, owner: {} } // Voiture sans topSpeed
+];
+console.log("Calcul avec données manquantes :", safeCalculateAverageSpeed(carsWithMissingData));
 
 // ============================================================================
 // 8.6. Chaînage d'erreurs et contexte (bonus difficile)
@@ -277,7 +397,7 @@ function safeCalculateAverageSpeed(cars) {
 console.log("\n--- 8.6. Chaînage d'erreurs et contexte ---");
 
 function processCarBatch(carDataArray) {
-    //....
+    
 }
 
 // Données de test avec plusieurs cas d'erreur
