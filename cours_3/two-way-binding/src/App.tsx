@@ -1,23 +1,35 @@
 import Review from './Review';
+import { useState } from 'react';
 
 function App() {
+  const [feedback, setFeedback] = useState('');
+  const [name, setName] = useState('');
+
+  function handleFeedbackChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    setFeedback(event.target.value);
+  }
+
+  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setName(event.target.value);
+  }
+
   return (
     <>
       <section id="feedback">
         <h2>Please share some feedback</h2>
         <p>
           <label>Your Feedback</label>
-          <textarea />
+          <textarea value={feedback} onChange={handleFeedbackChange} />
         </p>
         <p>
           <label>Your Name</label>
-          <input type="text" />
+          <input type="text" value={name} onChange={handleNameChange} />
         </p>
       </section>
       <section id="draft">
         <h2>Your feedback</h2>
 
-        <Review />
+        <Review feedback={feedback} student={name}/>
 
         <p>
           <button>Save</button>
